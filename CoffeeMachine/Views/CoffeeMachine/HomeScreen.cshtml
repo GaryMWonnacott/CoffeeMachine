@@ -1,0 +1,82 @@
+﻿@using CoffeeMachine.Application;
+@model CoffeeMachine.Models.HomeScreenVM
+@section Scripts{
+    <script>
+        function MakeCoffee() {
+            $('#spinner').removeClass("hidden");
+            var numEspressoShots = $('#NumEspressoShots').val().toString();
+            var addMilk = $('#AddMilk').prop('checked').toString();
+            var url = '@Url.Action("MakeCoffee", "CoffeeMachine")?numEspressoShots=' + numEspressoShots + '&addMilk=' + addMilk;
+            $('#page').load(url);
+        };
+        function TurnOn() {
+            var url = '@Url.Action("TurnOn", "CoffeeMachine")';
+            $('#page').load(url);
+        };
+        function TurnOff() {
+            var url = '@Url.Action("TurnOff", "CoffeeMachine")';
+            $('#page').load(url);
+        };
+        function Refresh() {
+            window.location.reload();
+        };
+    </script>
+}
+@{
+    var idle = Model.State.CanMakeCoffee();
+}
+<div id="page" style="margin-top:45px">
+    <div id="spinner" class="hidden">
+        <div>
+            <img src="https://i.gifer.com/GBm.gif" />
+        </div>
+        <div >Making coffee...</div>
+    </div>
+
+    <div>
+        <span>
+            <input id="on" class="@(Model.State.CanTurnOn()?"":"hidden")" type="button" value="On" onclick="TurnOn()" />
+            <input id="off" class="@(Model.State.DescriptionGet()=="Off"?"hidden":"")" type="button" value="Off" onclick="TurnOff()" @(Model.State.DescriptionGet() == "Active" ? "disabled" : "") />
+        </span>
+        <span>
+            <input id="makeCoffee" type="button" value="Make Coffee" onclick="MakeCoffee()" @(idle ? "" : "disabled") />
+        </span>
+    </div>
+    <div>
+        @(string.IsNullOrEmpty(Model.LastActionMessage) ? "Machine is: "+@Model.State.DescriptionGet() : Model.LastActionMessage)</div>
+    <table style="margin-top:45px">
+        <tr>
+            <th colspan="2">
+                Options
+            </th>
+        </tr>
+        <tr>
+            <td>Number Espresso Shots: </td>
+            <td>@(idle ? Html.EditorFor(m => m.NumEspressoShots) : Html.DisplayFor(m => m.NumEspressoShots))</td>
+        </tr>
+        <tr>
+            <td>Add Milk: </td>
+            <td>@(idle ? Html.CheckBoxFor(m => m.AddMilk, new{@checked = "checked"}) : Html.DisplayFor(m => m.AddMilk))</td>
+        </tr>
+    </table>
+    <table style="margin-top:45px">
+        <tr>
+            <th colspan="2">
+                State
+            </th>
+        </tr>
+        <tr><td>Machine is: </td><td>@Model.State.DescriptionGet()</td></tr>
+        @foreach(CoffeeMachineElement State in Model.Elements)
+        {
+            <tr>
+                <td>@State.Name:</td>
+                <td>@State.State</td>
+            </tr>
+        }
+    </table>
+    <div>
+    <span>
+            <input id="refresh" type="button" value="Refresh" onclick="Refresh()" />
+        </span>
+    </div>
+</div>

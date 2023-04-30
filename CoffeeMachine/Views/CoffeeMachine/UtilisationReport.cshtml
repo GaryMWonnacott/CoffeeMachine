@@ -1,0 +1,26 @@
+﻿@using CoffeeMachine.Services.DTOs;
+@model CoffeeMachine.Models.UtilisationVM
+
+<style>
+    table,
+    th,
+    td {
+        padding: 10px;
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+</style>
+<table style="margin-top:45px">
+    <tr><th>Day Of Week</th><th>From</th><th>To</th>AverageCoffees</tr>
+    @foreach (DailySummaryRowDTO m in Model.DailySummary)
+    {
+        <tr><td>@m.DayOfWeek</td><td>@m.MinTime</td><td>@m.MaxTime</td><td>@m.AverageCoffees</td></tr>
+    }
+</table>
+<table style="margin-top:45px">
+    <tr><th>Hour</th><th>AverageCoffees</th></tr>
+    @foreach (HourlySummaryRowDTO m in Model.HourlySummary)
+    {
+        <tr><td>@m.Hour</td><td align='right'>@m.AverageCoffees</td></tr>
+    }
+</table>
