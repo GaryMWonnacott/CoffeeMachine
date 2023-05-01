@@ -46,10 +46,7 @@ namespace CoffeeMachine.Controllers
 
         public async Task<IActionResult> UtilisationReport()
         {
-            var vm = new UtilisationVM();
-
-            vm.HourlySummary = await _CoffeeMachineApplication.HourlySummaryGet();
-            vm.DailySummary = await _CoffeeMachineApplication.DailySummaryGet();
+            var vm = new UtilisationVM(await _CoffeeMachineApplication.DailySummaryGet(), await _CoffeeMachineApplication.HourlySummaryGet());
 
             return View(vm);
         }

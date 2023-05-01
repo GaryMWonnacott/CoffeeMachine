@@ -136,34 +136,6 @@ namespace CoffeeMachine.Services.DataAccess
 
         }
 
-        public IList<ActionTypeDTO> ActionTypesGet()
-        {
-            SqlDataReader? result = null;
-
-            var ret = new List<ActionTypeDTO>();
-
-            try
-            {
-                var command = "dbo.CoffeeMachine_ActionType_Get";
-
-                result = new DataAccess().ExecuteProcedure(command);
-
-                while (result.Read())
-                {
-                    ret.Add(new ActionTypeDTO(result.GetFieldValue<String>(0), result.GetFieldValue<String>(1), result.GetFieldValue<String>(2), result.GetFieldValue<Int16>(3)));
-                }
-            }
-            finally
-            {
-                if (result != null)
-                {
-                    result.Close();
-                }
-            }
-
-            return ret;
-
-        }
     }
 
 }

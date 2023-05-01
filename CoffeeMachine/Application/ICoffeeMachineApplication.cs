@@ -6,9 +6,9 @@ namespace CoffeeMachine.Application
     {
         public void StateCurrentSet(CoffeeMachineState state);
         public CoffeeMachineState StateCurrentGet();
-        public Task<IDictionary<String, CoffeeMachineActionType>> ActionTypesGet();
-        public Task<IList<CoffeeMachineElement>> CoffeeMachineElementsGet();
-        public Task<String> LastActionMessageGet();
+        public IDictionary<String, CoffeeMachineActionType> ActionTypesGet();
+        public IList<CoffeeMachineElement> CoffeeMachineElementsGet();
+        public String LastActionMessageGet();
         public Task<ICoffeeMachineApplication> TurnOn();
         public Task<ICoffeeMachineApplication> TurnOff();
         public Task<ICoffeeMachineApplication> MakeCoffee(int numEspressoShots, bool addMilk);

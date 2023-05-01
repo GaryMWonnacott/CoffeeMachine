@@ -7,7 +7,6 @@ namespace CoffeeMachine.Services.DataAccess
         public Task ActionLog(CoffeeMachineActionDTO action);
         public Task<IList<HourlySummaryRowDTO>> HourlySummaryGet();
         public Task<IList<DailySummaryRowDTO>> DailySummaryGet();
-        public IList<ActionTypeDTO> ActionTypesGet();
     }
 
 }

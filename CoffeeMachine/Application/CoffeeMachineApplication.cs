@@ -35,15 +35,15 @@ namespace CoffeeMachine.Application
         {
             return CurrentState;
         }
-        public async Task<IDictionary<String, CoffeeMachineActionType>> ActionTypesGet()
+        public IDictionary<String, CoffeeMachineActionType> ActionTypesGet()
         {
             return ActionTypeList;
         }
-        public async Task<IList<CoffeeMachineElement>> CoffeeMachineElementsGet()
+        public IList<CoffeeMachineElement> CoffeeMachineElementsGet()
         {
             return CoffeeMachineElements.Elements;
         }
-        public async Task<String> LastActionMessageGet()
+        public String LastActionMessageGet()
         {
             return LastAction.Message;
         }

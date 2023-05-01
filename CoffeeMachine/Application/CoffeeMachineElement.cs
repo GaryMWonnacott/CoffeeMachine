@@ -21,7 +21,7 @@ namespace CoffeeMachine.Application
             IsAlert = Elements != null && Elements.Any(m => m.State == StateInternal.Alert);
         }
 
-        public IList<CoffeeMachineElement> Elements { get; set; }
+        public IList<CoffeeMachineElement>? Elements { get; set; }
         public bool IsAlert { get; private set; }
     }
 }

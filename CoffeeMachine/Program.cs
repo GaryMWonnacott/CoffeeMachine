@@ -40,9 +40,9 @@ app.MapGet("/State", (ICoffeeMachineApplication coffeeMachineApplication) =>
     return ret;
 });
 
-app.MapGet("/ElementStates", async (ICoffeeMachineApplication coffeeMachineApplication) =>
+app.MapGet("/ElementStates", (ICoffeeMachineApplication coffeeMachineApplication) =>
 {
-    var ret = await coffeeMachineApplication.CoffeeMachineElementsGet();
+    var ret = coffeeMachineApplication.CoffeeMachineElementsGet();
 
     return ret;
 });
