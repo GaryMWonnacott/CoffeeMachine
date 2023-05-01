@@ -93,6 +93,6 @@ namespace CoffeeMachine.Services.CoffeeMachine
 
         }
         // Randomly create a state for testing. This can be replaced as required.
-        private State GetRandomState() => _randomStateGenerator.Next(1, 10) == 8 ? State.Alert : State.Okay;
+        private State GetRandomState() => _randomStateGenerator.Next(1, 10) == 1 ? State.Alert : State.Okay;
     }
 }

@@ -5,6 +5,7 @@ using CoffeeMachine.Services.CoffeeMachine;
 using Microsoft.Extensions.Caching.Memory;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 
 namespace CoffeeMachine.Application
 {
@@ -19,15 +20,12 @@ namespace CoffeeMachine.Application
             _DataAccessService = dataAccessService;
             _CoffeeMachine = coffeeMachineService;
 
-            var actionTypes = _DataAccessService.ActionTypesGet();
-            CoffeeMachineActionTypes = new CoffeeMachineActionTypes(actionTypes);
-
             StatusCurrentSetFromCoffeeMachine();
-            LastAction = new CoffeeMachineAction(CoffeeMachineActionTypes.ActionTypeGet("None"));
+
+            LastAction = new CoffeeMachineAction(ActionTypeList["None"]);
         }
         private CoffeeMachineState CurrentState { get; set; }
-        private IList<CoffeeMachineElement> CoffeeMachineElements { get; set; }
-        private CoffeeMachineActionTypes CoffeeMachineActionTypes { get; set; }
+        private CoffeeMachineElements CoffeeMachineElements { get; set; }
         private CoffeeMachineAction LastAction { get; set; }
         public void StateCurrentSet(CoffeeMachineState state)
         {
@@ -37,9 +35,13 @@ namespace CoffeeMachine.Application
         {
             return CurrentState;
         }
+        public async Task<IDictionary<String, CoffeeMachineActionType>> ActionTypesGet()
+        {
+            return ActionTypeList;
+        }
         public async Task<IList<CoffeeMachineElement>> CoffeeMachineElementsGet()
         {
-            return CoffeeMachineElements;
+            return CoffeeMachineElements.Elements;
         }
         public async Task<String> LastActionMessageGet()
         {
@@ -48,43 +50,28 @@ namespace CoffeeMachine.Application
 
         private void StatusCurrentSetFromCoffeeMachine()
         {
-            CoffeeMachineElements = new List<CoffeeMachineElement>
-            {
-                new CoffeeMachineElement("Water Level State", (StateInternal)_CoffeeMachine.WaterLevelState),
-                new CoffeeMachineElement("Bean Feed State", (StateInternal)_CoffeeMachine.BeanFeedState),
-                new CoffeeMachineElement("Waste Coffee State", (StateInternal)_CoffeeMachine.WasteCoffeeState),
-                new CoffeeMachineElement("Water Tray State", (StateInternal)_CoffeeMachine.WaterTrayState)
-            };
+            CoffeeMachineElements = new CoffeeMachineElements(
+                new List<CoffeeMachineElement>
+                    {
+                        new CoffeeMachineElement("Water Level State", (StateInternal)_CoffeeMachine.WaterLevelState),
+                        new CoffeeMachineElement("Bean Feed State", (StateInternal)_CoffeeMachine.BeanFeedState),
+                        new CoffeeMachineElement("Waste Coffee State", (StateInternal)_CoffeeMachine.WasteCoffeeState),
+                        new CoffeeMachineElement("Water Tray State", (StateInternal)_CoffeeMachine.WaterTrayState)
+                    }
+            );
 
-            if (!_CoffeeMachine.IsOn)
-            {
-                CurrentState = new Off();
-            }
-            else if (_CoffeeMachine.IsMakingCoffee)
-            {
-                CurrentState = new Active();
-            }
-            else if (CoffeeMachineElements.Any(m => m.State == StateInternal.Alert))
-            {
-                CurrentState = new Alert();
-            }
-            else
-            {
-                CurrentState = new Idle();
-            }
+            CurrentState = StateConverter.StateGet(_CoffeeMachine.IsOn, _CoffeeMachine.IsMakingCoffee, CoffeeMachineElements.IsAlert);
         }
 
         public async Task<ICoffeeMachineApplication> TurnOn()
         {
-            var action = new CoffeeMachineAction(CoffeeMachineActionTypes.ActionTypeGet("TurnOn"));
+            //StatusCurrentSetFromCoffeeMachine();
+            var action = new CoffeeMachineAction(ActionTypeList["TurnOn"], CurrentState);
 
-            StatusCurrentSetFromCoffeeMachine();
-
-            if (CurrentState.CanTurnOn(action))
+            if (action.IsValid())
             {
                 try
                 {
-                    CurrentState = new Idle();
                     await _CoffeeMachine.TurnOnAsync();
                     StatusCurrentSetFromCoffeeMachine();
                 }
@@ -105,15 +92,15 @@ namespace CoffeeMachine.Application
 
         public async Task<ICoffeeMachineApplication> TurnOff()
         {
-            var action = new CoffeeMachineAction(CoffeeMachineActionTypes.ActionTypeGet("TurnOff"));
-            StatusCurrentSetFromCoffeeMachine();
+            //StatusCurrentSetFromCoffeeMachine();
+            var action = new CoffeeMachineAction(ActionTypeList["TurnOff"], CurrentState);
 
-            if (CurrentState.CanTurnOff(action))
+            if (action.IsValid())
             {
                 try
                 {
-                    CurrentState = new Off();
                     await _CoffeeMachine.TurnOffAsync();
+                    StatusCurrentSetFromCoffeeMachine();
                 }
                 catch
                 {
@@ -132,21 +119,26 @@ namespace CoffeeMachine.Application
 
         public async Task<ICoffeeMachineApplication> MakeCoffee(int numEspressoShots, bool addMilk)
         {
-            var options = new CoffeeCreationOptions(numEspressoShots, addMilk);
-            var action = new CoffeeMachineAction(CoffeeMachineActionTypes.ActionTypeGet("MakeCoffee"), options);
-            StatusCurrentSetFromCoffeeMachine();
+            var actionOptions = new Dictionary<string, object>()
+            {
+                ["NumEspressoShots"] = numEspressoShots,
+                ["AddMilk"] = addMilk
+            };
 
-            if (CurrentState.CanMakeCoffee(action))
+            //StatusCurrentSetFromCoffeeMachine();
+            var action = new CoffeeMachineAction(ActionTypeList["MakeCoffee"], CurrentState, optionValues: actionOptions);
+
+            if (action.IsValid())
             {
                 try
                 {
-                    CurrentState = new Active();
-                    await _CoffeeMachine.MakeCoffeeAsync(options);
-                    CurrentState = new Idle();
+                    CurrentState = StateList["Active"];
+                    await _CoffeeMachine.MakeCoffeeAsync(CoffeeCreationOptionsFromOptionValues(actionOptions));
+                    StatusCurrentSetFromCoffeeMachine();
                 }
-            catch
-            {
-                action.IsSuccess = false;
+                catch
+                {
+                    action.IsSuccess = false;
                 }
             }
             else
@@ -173,11 +165,78 @@ namespace CoffeeMachine.Application
             return ret;
         }
 
+        private CoffeeCreationOptions CoffeeCreationOptionsFromOptionValues(IDictionary<String, Object> optionValues)
+        {
+            return new CoffeeCreationOptions((int)optionValues["NumEspressoShots"], (bool)optionValues["AddMilk"]);
+        }
+
         private async Task ActionProcess(CoffeeMachineAction action)
         {
             LastAction = action;
-            var coffeeMachineActionDTO = new CoffeeMachineActionDTO(action.ActionType.ActionTypeId, action.IsSuccess, action.Message, action.TimeStamp, action.CoffeeCreationOptionsGetAsString());
+            var coffeeMachineActionDTO = new CoffeeMachineActionDTO(action.ActionType.ActionTypeId, action.IsSuccess, action.Message, action.TimeStamp, action.OptionValuesGetAsString());
             await _DataAccessService.ActionLog(coffeeMachineActionDTO);
         }
+
+        private static readonly IDictionary<String, CoffeeMachineActionType> ActionTypeList =
+            new Dictionary<String, CoffeeMachineActionType>()
+            {
+                ["None"] = new CoffeeMachineActionType(),
+                ["TurnOff"] = new CoffeeMachineActionType(
+                    "TurnOff",
+                    "Turned off",
+                    "Failed to turn off",
+                    1,
+                    new List<CoffeeMachineState>()
+                    {
+                        new CoffeeMachineState("Idle"),
+                        new CoffeeMachineState("Alert")
+                    }
+                    ),
+                ["MakeCoffee"] = new CoffeeMachineActionType(
+                    "MakeCoffee", 
+                    "Made coffee", 
+                    "Failed to make coffee", 
+                    2,
+                    new List<CoffeeMachineState>()
+                    {
+                        new CoffeeMachineState("Idle")
+                    },
+                    new Dictionary<String,CoffeeMachineOption>()
+                    {
+                        ["NumEspressoShots"]=new CoffeeMachineOption("NumEspressoShots","int"),
+                        ["AddMilk"] = new CoffeeMachineOption("NumEspressoShots", "bool")
+                    }
+                    ),
+                ["TurnOn"] = new CoffeeMachineActionType(
+                    "TurnOn", 
+                    "Turned on", 
+                    "Failed to turn on", 
+                    3,
+                    new List<CoffeeMachineState>()
+                    {
+                        new CoffeeMachineState("Off")
+                    }
+                    )
+            };
+
+        private static readonly IDictionary<String, CoffeeMachineState> StateList =
+            new Dictionary<String, CoffeeMachineState>()
+            {
+                ["Active"] = new CoffeeMachineState("Active"),
+                ["Idle"] = new CoffeeMachineState("Idle"),
+                ["Off"] = new CoffeeMachineState("Off"),
+                ["Alert"] = new CoffeeMachineState("Alert")
+            };
+
+        private static readonly CoffeeMachineStateConverter StateConverter =
+            new CoffeeMachineStateConverter(
+                new List<CoffeeMachineStateConverterRule>()
+                {
+                    new CoffeeMachineStateConverterRule(order:1,isOn:false,state:StateList["Off"]),
+                    new CoffeeMachineStateConverterRule(order:2,isMakingCoffee:true,state:StateList["Active"]),
+                    new CoffeeMachineStateConverterRule(order:3,isAlert:true,state:StateList["Alert"]),
+                    new CoffeeMachineStateConverterRule(order:4,state:StateList["Idle"])
+                }
+            );
     }
 }

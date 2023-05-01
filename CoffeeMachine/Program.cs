@@ -59,9 +59,9 @@ app.MapGet("/TurnOn", async (ICoffeeMachineApplication coffeeMachineApplication)
     return vm.LastActionMessageGet();
 });
 
-app.MapGet("/MakeCoffee", async (int numEsspressoShots, bool addMilk, ICoffeeMachineApplication coffeeMachineApplication) =>
+app.MapGet("/MakeCoffee", async (int numEspressoShots, bool addMilk, ICoffeeMachineApplication coffeeMachineApplication) =>
 {
-    var vm = await coffeeMachineApplication.MakeCoffee(numEsspressoShots, addMilk);
+    var vm = await coffeeMachineApplication.MakeCoffee(numEspressoShots, addMilk);
     return vm.LastActionMessageGet();
 });
 

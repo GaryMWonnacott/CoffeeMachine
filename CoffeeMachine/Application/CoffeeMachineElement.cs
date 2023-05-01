@@ -15,13 +15,13 @@ namespace CoffeeMachine.Application
     }
     public class CoffeeMachineElements
     {
-        public CoffeeMachineElements(string name, StateInternal state)
+        public CoffeeMachineElements(IList<CoffeeMachineElement> elements)
         {
-            Name = name;
-            State = state;
+            Elements = elements;
+            IsAlert = Elements != null && Elements.Any(m => m.State == StateInternal.Alert);
         }
 
-        public string Name { get; set; }
-        public StateInternal State { get; set; }
+        public IList<CoffeeMachineElement> Elements { get; set; }
+        public bool IsAlert { get; private set; }
     }
 }

@@ -6,6 +6,7 @@ namespace CoffeeMachine.Application
     {
         public void StateCurrentSet(CoffeeMachineState state);
         public CoffeeMachineState StateCurrentGet();
+        public Task<IDictionary<String, CoffeeMachineActionType>> ActionTypesGet();
         public Task<IList<CoffeeMachineElement>> CoffeeMachineElementsGet();
         public Task<String> LastActionMessageGet();
         public Task<ICoffeeMachineApplication> TurnOn();

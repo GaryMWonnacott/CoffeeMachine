@@ -23,7 +23,7 @@
     </script>
 }
 @{
-    var idle = Model.State.CanMakeCoffee();
+    var idle = Model.ActionTypes["MakeCoffee"];
 }
 <div id="page" style="margin-top:45px">
     <div id="spinner" class="hidden">
@@ -35,15 +35,15 @@
 
     <div>
         <span>
-            <input id="on" class="@(Model.State.CanTurnOn()?"":"hidden")" type="button" value="On" onclick="TurnOn()" />
-            <input id="off" class="@(Model.State.DescriptionGet()=="Off"?"hidden":"")" type="button" value="Off" onclick="TurnOff()" @(Model.State.DescriptionGet() == "Active" ? "disabled" : "") />
+            <input id="on" class="@(Model.ActionTypes["TurnOn"]?"":"hidden")" type="button" value="On" onclick="TurnOn()" />
+            <input id="off" class="@(Model.State=="Off"?"hidden":"")" type="button" value="Off" onclick="TurnOff()" @(Model.State == "Active" ? "disabled" : "") />
         </span>
         <span>
             <input id="makeCoffee" type="button" value="Make Coffee" onclick="MakeCoffee()" @(idle ? "" : "disabled") />
         </span>
     </div>
     <div>
-        @(string.IsNullOrEmpty(Model.LastActionMessage) ? "Machine is: "+@Model.State.DescriptionGet() : Model.LastActionMessage)</div>
+        @(string.IsNullOrEmpty(Model.LastActionMessage) ? "Machine is: "+@Model.State : Model.LastActionMessage)</div>
     <table style="margin-top:45px">
         <tr>
             <th colspan="2">
@@ -65,12 +65,12 @@
                 State
             </th>
         </tr>
-        <tr><td>Machine is: </td><td>@Model.State.DescriptionGet()</td></tr>
-        @foreach(CoffeeMachineElement State in Model.Elements)
+        <tr><td>Machine is: </td><td>@Model.State</td></tr>
+        @foreach(KeyValuePair<String,String> State in Model.Elements)
         {
             <tr>
-                <td>@State.Name:</td>
-                <td>@State.State</td>
+                <td>@State.Key:</td>
+                <td>@State.Value</td>
             </tr>
         }
     </table>
