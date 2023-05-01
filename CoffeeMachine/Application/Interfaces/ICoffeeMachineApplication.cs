@@ -1,14 +1,14 @@
 ﻿using CoffeeMachine.Services.DTOs;
 
-namespace CoffeeMachine.Application
+namespace CoffeeMachine.Application.Interfaces
 {
     public interface ICoffeeMachineApplication
     {
         public void StateCurrentSet(CoffeeMachineState state);
         public CoffeeMachineState StateCurrentGet();
-        public IDictionary<String, CoffeeMachineActionType> ActionTypesGet();
-        public IList<CoffeeMachineElement> CoffeeMachineElementsGet();
-        public String LastActionMessageGet();
+        public IDictionary<string, bool> ActionTypesValidityGet();
+        public IDictionary<String, String> CoffeeMachineElementsGet();
+        public string LastActionMessageGet();
         public Task<ICoffeeMachineApplication> TurnOn();
         public Task<ICoffeeMachineApplication> TurnOff();
         public Task<ICoffeeMachineApplication> MakeCoffee(int numEspressoShots, bool addMilk);

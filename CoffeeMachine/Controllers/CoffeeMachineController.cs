@@ -1,6 +1,6 @@
 ﻿using CoffeeMachine.Models;
 using Microsoft.AspNetCore.Mvc;
-using CoffeeMachine.Application;
+using CoffeeMachine.Application.Interfaces;
 
 namespace CoffeeMachine.Controllers
 {

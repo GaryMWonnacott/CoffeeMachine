@@ -1,7 +1,4 @@
-﻿using CoffeeMachine.Services.CoffeeMachine;
-using System.Security.AccessControl;
-
-namespace CoffeeMachine.Application
+﻿namespace CoffeeMachine.Application
 {
     public class CoffeeMachineAction
     {
@@ -25,7 +22,7 @@ namespace CoffeeMachine.Application
         public CoffeeMachineState? State { get; private set; }
         public bool IsSuccess { get; set; }
         public String? AdditionalMessage { get; set; }
-        public String Message => String.Concat(IsSuccess ? ActionType.Message : ActionType.FailedMessage, String.IsNullOrWhiteSpace(AdditionalMessage) ? "" : ":" + AdditionalMessage);
+        public String Message => String.Concat(IsSuccess ? ActionType.Message : ActionType.FailedMessage, (!IsValid()&&State!=null ? ":" + State.Message : ""), String.IsNullOrWhiteSpace(AdditionalMessage) ? "" : ":" + AdditionalMessage);
         public DateTime TimeStamp { get; set; } = DateTime.Now;
         public IDictionary<String,Object>? OptionValues { get; set; }
         public bool IsValid ()

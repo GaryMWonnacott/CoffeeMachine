@@ -1,11 +1,8 @@
-﻿using CoffeeMachine.Models;
-using CoffeeMachine.Services.DTOs;
+﻿using CoffeeMachine.Services.DTOs;
 using CoffeeMachine.Services.DataAccess;
 using CoffeeMachine.Services.CoffeeMachine;
 using Microsoft.Extensions.Caching.Memory;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Options;
-using System.Collections.Generic;
+using CoffeeMachine.Application.Interfaces;
 
 namespace CoffeeMachine.Application
 {
@@ -35,13 +32,19 @@ namespace CoffeeMachine.Application
         {
             return CurrentState;
         }
-        public IDictionary<String, CoffeeMachineActionType> ActionTypesGet()
+        public IDictionary<String, bool> ActionTypesValidityGet()
         {
-            return ActionTypeList;
+            var ret = new Dictionary<String, bool>();
+
+            foreach(KeyValuePair<String, CoffeeMachineActionType> actionType in ActionTypeList)
+            {
+                ret.Add(actionType.Key, actionType.Value.IsValid(CurrentState));
+            }
+            return ret;
         }
-        public IList<CoffeeMachineElement> CoffeeMachineElementsGet()
+        public IDictionary<String,String> CoffeeMachineElementsGet()
         {
-            return CoffeeMachineElements.Elements;
+            return CoffeeMachineElements.ElementsGetAsDictionary();
         }
         public String LastActionMessageGet()
         {

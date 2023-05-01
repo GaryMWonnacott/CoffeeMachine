@@ -1,6 +1,7 @@
 using CoffeeMachine.Services.DataAccess;
 using CoffeeMachine.Services.CoffeeMachine;
 using CoffeeMachine.Application;
+using CoffeeMachine.Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

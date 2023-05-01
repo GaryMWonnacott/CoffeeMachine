@@ -1,4 +1,4 @@
-﻿using CoffeeMachine.Application;
+﻿using CoffeeMachine.Application.Interfaces;
 
 namespace CoffeeMachine.Models
 {
@@ -20,23 +20,11 @@ namespace CoffeeMachine.Models
 
             State = state.Name;
 
-            Elements = new Dictionary<String, String>();
-
-            foreach(CoffeeMachineElement element in coffeeMachineApplication.CoffeeMachineElementsGet())
-            {
-                Elements.Add(element.Name, element.State.ToString());
-            };
+            Elements = coffeeMachineApplication.CoffeeMachineElementsGet();
 
             LastActionMessage = coffeeMachineApplication.LastActionMessageGet();
 
-            ActionTypes = new Dictionary<String, bool>();
-
-            foreach (KeyValuePair<String,CoffeeMachineActionType> actionType in coffeeMachineApplication.ActionTypesGet())
-            {
-                var valid = actionType.Value.IsValid(state);
-                ActionTypes.Add(actionType.Key, actionType.Value.IsValid(state));
-
-            };
+            ActionTypes = coffeeMachineApplication.ActionTypesValidityGet();
         }
         public String State { get; set; }
         public IDictionary<String,bool> ActionTypes { get; set; }

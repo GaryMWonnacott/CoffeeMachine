@@ -1,8 +1,4 @@
-﻿using CoffeeMachine.Models;
-using CoffeeMachine.Services.CoffeeMachine;
-using CoffeeMachine.Services.DTOs;
-
-namespace CoffeeMachine.Application
+﻿namespace CoffeeMachine.Application
 {
     public class CoffeeMachineActionType
     {
@@ -22,11 +18,11 @@ namespace CoffeeMachine.Application
             ValidStates = validStates;
             Options = options;
         }
-        public String Name { get; set; }
-        public String Message { get; set; }
-        public String FailedMessage { get; set; }
+        public String Name { get; private set; }
+        public String Message { get; private set; }
+        public String FailedMessage { get; private set; }
         public int ActionTypeId { get; set; }
-        public IList<CoffeeMachineState> ValidStates { get; set; }
+        public IList<CoffeeMachineState> ValidStates { get; private set; }
         public IDictionary<String, CoffeeMachineOption>? Options { get; set; }
         public bool IsValid(CoffeeMachineState state)
         {
