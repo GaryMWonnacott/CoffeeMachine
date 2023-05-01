@@ -13,7 +13,7 @@
 
     class Off : CoffeeMachineState
     {
-        private string Reason = "Machine is active";
+        private string Reason = "Machine is off";
         public string DescriptionGet()
         {
             return "Off";
@@ -48,7 +48,7 @@
 
     class Idle : CoffeeMachineState
     {
-        private string Reason = "Machine is active";
+        private string Reason = "Machine is idle";
         public string DescriptionGet()
         {
             return "Idle";
