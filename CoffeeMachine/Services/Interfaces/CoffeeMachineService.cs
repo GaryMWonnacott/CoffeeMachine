@@ -11,12 +11,6 @@ namespace CoffeeMachine.Services.CoffeeMachine
     {
         public int NumEspressoShots { get; set; }
         public bool AddMilk { get; set; }
-
-        public CoffeeCreationOptions(int numEspressoShots, bool addMilk) : this()
-        {
-            this.NumEspressoShots = numEspressoShots;
-            this.AddMilk = addMilk;
-        }
     }
 
     public struct cacheNeverRemove

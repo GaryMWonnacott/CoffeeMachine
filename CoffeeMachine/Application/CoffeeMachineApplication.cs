@@ -170,7 +170,7 @@ namespace CoffeeMachine.Application
 
         private CoffeeCreationOptions CoffeeCreationOptionsFromOptionValues(IDictionary<String, Object> optionValues)
         {
-            return new CoffeeCreationOptions((int)optionValues["NumEspressoShots"], (bool)optionValues["AddMilk"]);
+            return new CoffeeCreationOptions() { NumEspressoShots=(int)optionValues["NumEspressoShots"], AddMilk=(bool)optionValues["AddMilk"] };
         }
 
         private async Task ActionProcess(CoffeeMachineAction action)
