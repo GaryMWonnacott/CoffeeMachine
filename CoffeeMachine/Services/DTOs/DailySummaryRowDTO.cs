@@ -1,5 +1,4 @@
-﻿
-namespace CoffeeMachine.Services.DTOs
+﻿namespace CoffeeMachine.Services.DTOs
 {
     public class DailySummaryRowDTO
     {

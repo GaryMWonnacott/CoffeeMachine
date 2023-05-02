@@ -1,4 +1,4 @@
-﻿using CoffeeMachine.Application;
+﻿using CoffeeMachine.Application.Interfaces;
 
 namespace CoffeeMachine.Models
 {
@@ -6,22 +6,29 @@ namespace CoffeeMachine.Models
     {
         public HomeScreenVM(ICoffeeMachineApplication coffeeMachineApplication)
         {
-            _ = HomeScreenVMSetupFromApplication(coffeeMachineApplication);
+            HomeScreenVMSetupFromApplication(coffeeMachineApplication);
         }
         public HomeScreenVM(ICoffeeMachineApplication coffeeMachineApplication, int numEspressoShots, bool addMilk)
         {
-            _ = HomeScreenVMSetupFromApplication(coffeeMachineApplication);
+            HomeScreenVMSetupFromApplication(coffeeMachineApplication);
             NumEspressoShots = numEspressoShots;
             AddMilk = addMilk;
         }
-        private async Task HomeScreenVMSetupFromApplication(ICoffeeMachineApplication coffeeMachineApplication)
+        private void HomeScreenVMSetupFromApplication(ICoffeeMachineApplication coffeeMachineApplication)
         {
-            State = coffeeMachineApplication.StateCurrentGet();
-            Elements = await coffeeMachineApplication.CoffeeMachineElementsGet();
-            LastActionMessage = await coffeeMachineApplication.LastActionMessageGet();
+            var state = coffeeMachineApplication.StateCurrentGet();
+
+            State = state.Name;
+
+            Elements = coffeeMachineApplication.CoffeeMachineElementsGet();
+
+            LastActionMessage = coffeeMachineApplication.LastActionMessageGet();
+
+            ActionTypes = coffeeMachineApplication.ActionTypesValidityGet();
         }
-        public CoffeeMachineState State { get; set; }
-        public IList<CoffeeMachineElement> Elements { get; set; }
+        public String State { get; set; }
+        public IDictionary<String,bool> ActionTypes { get; set; }
+        public IDictionary<String,String> Elements { get; set; }
         public String? LastActionMessage { get; set; }
         public int NumEspressoShots { get; set; } = 1;
         public bool AddMilk { get; set; } = false;

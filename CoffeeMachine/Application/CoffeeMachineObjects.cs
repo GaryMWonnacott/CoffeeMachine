@@ -1,6 +1,4 @@
-﻿using CoffeeMachine.Services.CoffeeMachine;
-
-namespace CoffeeMachine.Application
+﻿namespace CoffeeMachine.Application
 {
     public enum StateInternal
     {

@@ -11,12 +11,6 @@ namespace CoffeeMachine.Services.CoffeeMachine
     {
         public int NumEspressoShots { get; set; }
         public bool AddMilk { get; set; }
-
-        public CoffeeCreationOptions(int numEspressoShots, bool addMilk) : this()
-        {
-            this.NumEspressoShots = numEspressoShots;
-            this.AddMilk = addMilk;
-        }
     }
 
     public struct cacheNeverRemove
@@ -93,6 +87,6 @@ namespace CoffeeMachine.Services.CoffeeMachine
 
         }
         // Randomly create a state for testing. This can be replaced as required.
-        private State GetRandomState() => _randomStateGenerator.Next(1, 10) == 8 ? State.Alert : State.Okay;
+        private State GetRandomState() => _randomStateGenerator.Next(1, 10) == 1 ? State.Alert : State.Okay;
     }
 }

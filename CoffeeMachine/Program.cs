@@ -1,6 +1,7 @@
 using CoffeeMachine.Services.DataAccess;
 using CoffeeMachine.Services.CoffeeMachine;
 using CoffeeMachine.Application;
+using CoffeeMachine.Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,9 +41,9 @@ app.MapGet("/State", (ICoffeeMachineApplication coffeeMachineApplication) =>
     return ret;
 });
 
-app.MapGet("/ElementStates", async (ICoffeeMachineApplication coffeeMachineApplication) =>
+app.MapGet("/ElementStates", (ICoffeeMachineApplication coffeeMachineApplication) =>
 {
-    var ret = await coffeeMachineApplication.CoffeeMachineElementsGet();
+    var ret = coffeeMachineApplication.CoffeeMachineElementsGet();
 
     return ret;
 });
@@ -59,9 +60,9 @@ app.MapGet("/TurnOn", async (ICoffeeMachineApplication coffeeMachineApplication)
     return vm.LastActionMessageGet();
 });
 
-app.MapGet("/MakeCoffee", async (int numEsspressoShots, bool addMilk, ICoffeeMachineApplication coffeeMachineApplication) =>
+app.MapGet("/MakeCoffee", async (int numEspressoShots, bool addMilk, ICoffeeMachineApplication coffeeMachineApplication) =>
 {
-    var vm = await coffeeMachineApplication.MakeCoffee(numEsspressoShots, addMilk);
+    var vm = await coffeeMachineApplication.MakeCoffee(numEspressoShots, addMilk);
     return vm.LastActionMessageGet();
 });
 
